@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Peer UID生成器</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div>
+        <h2>Server Peer UID生成器</h2>
+    </div>
+    <div>
+        嵌入数据：<input type="text" class="user" style="width:200px" placeholder="1-10位字母或数字，可留空">
+        <button onclick="doCreate()">生成</button>
+        <div class="res"></div>
+    </div>
+    <script>
+
+        function doCreate() {
+            const u = document.querySelector('.user');
+            let v = S4().substring(2) + S4() + S4();
+            if (u.value) {
+                if (!/^[a-z0-9]{1,10}$/.test(u.value)) {
+                    return alert('必须是小写字母或数字，1-10位')
+                }
+                v = u.value + v.substring(0, v.length - u.value.length)
+            }
+            const tt = tpl() + v // 34位
+            const sum = tt.substring(2).split('').reduce((num, c) => num + c.charCodeAt(), 0);
+            let a, b;
+            for (let i = 97; i <= 122; i++) {
+                const r = sum % i;
+                if ((r >= 97 && r <= 122) || (r >= 48 && r <= 57)) {
+                    a = i;
+                    b = r;
+                    break
+                }
+            }
+            if (!(a && b)) {
+                for (let i = 48; i <= 57; i++) {
+                    const r = sum % i;
+                    if ((r >= 97 && r <= 122) || (r >= 48 && r <= 57)) {
+                        a = i;
+                        b = r;
+                        break
+                    }
+                }
+                if (!(a && b)) {
+                    return alert('生成失败,请重试');
+                }
+            }
+            const res = tt + String.fromCharCode(a) + String.fromCharCode(b);
+            console.info('生成成功：', res);
+            document.querySelector('.res').innerHTML = res;
+        }
+        function S4() {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(36)
+        }
+        function tpl() {
+            return 'ss' + S4().substring(2) + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-";
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS P2P TEST</title>
+    <style>
+        #video{
+            width: 500px;
+        }
+    </style>
+    <script src="https://lib.baomitu.com/hls.js/1.1.5/hls.light.js"></script>
+    <script src="https://lib.baomitu.com/dplayer/1.26.0/DPlayer.min.js"></script>
+    <script>
+        sessionStorage.loglevel = 'warn'
+    </script>
+    <script src="./p2pstat.min.js"></script>
+    <script src="./hlsp2p.min.js"></script>
+
+</head>
+
+<body>
+    <video id="video" controls></video>
+    <script>
+        var video = document.getElementById('video');
+        var videoSrc = 'https://v.gsuus.com/play/QdJ9Vgyb/index.m3u8';
+        if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+            HlsP2P.Init(hls)
+        }else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoSrc;
+        }
+    </script>
+</body>
+
+</html>

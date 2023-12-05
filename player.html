@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS P2P TEST</title>
+    <script src="https://lib.baomitu.com/hls.js/1.1.5/hls.light.js"></script>
+    <script src="https://lib.baomitu.com/dplayer/1.26.0/DPlayer.min.js"></script>
+    <script>
+        sessionStorage.loglevel = 'warn'
+        // window.__hls_p2p_stat = [
+        //     { $emit: console.info.bind(console) },
+        // ]
+    </script>
+    <script src="./p2pstat.min.js"></script>
+    <script src="./hlsp2p.min.js"></script>
+
+    <style>
+        #dplayer {
+            max-width: 400px;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div id="dplayer"></div>
+        <button class="todebug" onclick="doDebug()">打开调试</button>
+
+    </div>
+    <script>
+        function doDebug() {
+            if (__hls_p2p_stat && typeof __hls_p2p_stat[0] == 'object') {
+                __hls_p2p_stat[0].$emit('debug', true)
+            } else {
+                console.warn('can not debug');
+            }
+        }
+    </script>
+    <script>
+        const url = 'https://v3.cdtlas.com/20210906/lq1jMVBI/1200kb/hls/index.m3u8'
+
+        // p2p config
+        // const opts = {
+        //     // tracker: "wss://tracker.suconghou.cn:8002/ws/",
+        //     mirrors: [
+        //         // "https://c1.suconghou.cn",
+        //         // "https://c2.suconghou.cn",
+        //         // "https://c3.suconghou.cn",
+        //         // "https://c4.suconghou.cn",
+        //     ],
+        //     rtcConf: {
+        //         iceServers: [
+        //             {
+        //                 urls: 'stun:stun.qq.com:3478',
+        //             },
+        //             {
+        //                 urls: 'stun:stun1.l.google.com:19302',
+        //             },
+        //             {
+        //                 urls: "stun:119.29.1.39:3478",
+        //             },
+        //             {
+        //                 urls: "turn:119.29.1.39:3478",
+        //                 username: "su",
+        //                 credential: "su"
+        //             },
+        //         ]
+        //     },
+        //     maxHttpThread: 3,
+        //     // statURL: 'https://www.p2sp.xyz/home/stats'
+
+        // }
+
+        const dp = new DPlayer({
+            container: document.getElementById('dplayer'),
+            screenshot: true,
+            type: 'customHls',
+            video: {
+                url: url,
+                type: 'customHls',
+                customType: {
+                    'customHls': function (video, player) {
+                        const hls = new Hls({
+                            maxBufferLength: 60,
+                            debug: false,
+                            live: false,
+                            startFragPrefetch: true,
+                        });
+                        hls.loadSource(video.src);
+                        hls.attachMedia(video);
+                        // new HlsP2P(hls, opts) , 使用外部参数
+                        // HlsP2P.Init(hls, "https://www.p2sp.xyz/home/api/config/default")， 使用远程加载参数
+                        HlsP2P.Init(hls) // 使用内部默认参数
+                    }
+                },
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
